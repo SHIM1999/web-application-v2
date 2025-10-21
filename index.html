@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간달프 스튜디오 - 추억을 되살리다</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            overflow-x: hidden;
+            background: #0a0a0a;
+            color: #fff;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(240, 147, 251, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(240, 147, 251, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.05s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Magic Trail */
+        .magic-trail {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            animation: twinkle 1s ease-out forwards;
+        }
+
+        @keyframes twinkle {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #c94b4b 0%, #4a2c2a 40%, #8b4513 70%, #d4a574 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .language-selector {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            gap: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 0.3rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .lang-btn:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #c94b4b, #8b4513);
+            color: white;
+            box-shadow: 0 4px 12px rgba(201, 75, 75, 0.4);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            10% { opacity: 0.3; }
+            50% { transform: translateY(-100vh) translateX(50px) scale(1.5); opacity: 0.6; }
+            90% { opacity: 0.3; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            padding: 2rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        }
+
+        .gandalf-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            animation: float-image 3s ease-in-out infinite;
+        }
+
+        @keyframes float-image {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .tagline {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 300;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(238, 90, 111, 0.4);
+            margin: 0.5rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(238, 90, 111, 0.6);
+        }
+
+        .section {
+            padding: 5rem 2rem;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #c94b4b, #d4a574);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features {
+            background: linear-gradient(180deg, #1a0f0a 0%, #2d1810 100%);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 60px rgba(201, 75, 75, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #d4a574;
+        }
+
+        .feature-desc {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        .demo-section {
+            background: linear-gradient(180deg, #2d1810 0%, #1a0f0a 100%);
+        }
+
+        .before-after {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .before-after-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .before-img, .after-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .before-img {
+            background: linear-gradient(45deg, #555, #888);
+            filter: grayscale(100%) sepia(20%);
+        }
+
+        .after-img {
+            background: linear-gradient(45deg, #c94b4b, #d4a574);
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+            animation: reveal 3s ease-in-out infinite;
+        }
+
+        @keyframes reveal {
+            0%, 100% { clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%); }
+            50% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+        }
+
+        .slider-text {
+            position: absolute;
+            top: 50%;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .before-text {
+            left: 10%;
+            transform: translateY(-50%);
+        }
+
+        .after-text {
+            right: 10%;
+            transform: translateY(-50%);
+        }
+
+        .process {
+            background: #1a0f0a;
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-around;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #c94b4b, #8b4513);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #d4a574;
+        }
+
+        .contact {
+            background: linear-gradient(180deg, #1a0f0a 0%, #2d1810 100%);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #d4a574;
+        }
+
+        .contact-info {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        footer {
+            background: #000;
+            padding: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-20px); }
+        }
+
+        .scroll-indicator div {
+            width: 30px;
+            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 25px;
+            position: relative;
+        }
+
+        .scroll-indicator div::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: scroll 2s infinite;
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; top: 8px; }
+            100% { opacity: 0; top: 30px; }
+        }
+
+        .hero-video {
+            margin-top: 2rem;
+            max-width: 700px;
+            width: 90%;
+            aspect-ratio: 9/16;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 1.2s ease-out 0.3s both;
+        }
+
+        .hero-video iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .logo { font-size: 2.5rem; }
+            .tagline { font-size: 1.2rem; }
+            .section-title { font-size: 2rem; }
+            .before-after { height: 300px; }
+            body { cursor: auto; }
+            .custom-cursor, .cursor-dot { display: none; }
+            .hero-video { max-width: 100%; aspect-ratio: 9/16; }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" onclick="changeLanguage('ko')" data-lang="ko">🇰🇷 한국어</button>
+        <button class="lang-btn" onclick="changeLanguage('en')" data-lang="en">🇺🇸 English</button>
+        <button class="lang-btn" onclick="changeLanguage('ru')" data-lang="ru">🇷🇺 Русский</button>
+    </div>
+
+    <section class="hero">
+        <div class="particles" id="particles"></div>
+        <div class="hero-content">
+            <img src="Gandalf.jpg" alt="Gandalf" class="gandalf-image" onerror="this.style.display='none'">
+            <div class="logo">✨ Gandalf Studio</div>
+            <div class="tagline">소중한 추억을 되살려 드립니다</div>
+            <p style="max-width: 600px; margin: 0 auto 2rem; font-size: 1.1rem; color: rgba(255,255,255,0.9);">
+                오래된 흑백 사진을 생생한 컬러로 변환하고, 고화질로 복원합니다.<br>
+                최첨단 AI 기술로 소중한 순간들을 아름다운 영상으로 만들어 드립니다.
+            </p>
+            <button class="cta-button" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">
+                지금 시작하기
+            </button>
+            <button class="cta-button" style="background: linear-gradient(135deg, #c94b4b, #8b4513);" 
+                    onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
+                자세히 알아보기
+            </button>
+        </div>
+        <div class="scroll-indicator">
+            <div></div>
+        </div>
+    </section>
+
+    <section class="section features" id="features">
+        <h2 class="section-title">우리의 마법</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-title">AI 컬러 복원</div>
+                <div class="feature-desc">
+                    흑백 사진을 자연스럽고 생생한 컬러로 되살립니다. 최첨단 AI 기술로 당시의 색감을 재현합니다.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <div class="feature-title">사진 복원</div>
+                <div class="feature-desc">
+                    긁힘, 찢어짐, 세월의 흔적을 말끔히 제거합니다. 선명함과 디테일을 되찾아 드립니다.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <div class="feature-title">화질 개선</div>
+                <div class="feature-desc">
+                    해상도를 높이고 이미지 품질을 향상시킵니다. 오래된 사진도 어제 찍은 것처럼 선명하게.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <div class="feature-title">추억 영상 제작</div>
+                <div class="feature-desc">
+                    사진 앨범을 감동적인 영상으로 만들어 드립니다. 음악과 부드러운 전환 효과가 함께합니다.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💝</div>
+                <div class="feature-title">앨범 서비스</div>
+                <div class="feature-desc">
+                    앨범 전체를 보내주시면 디지털화, 복원 후 원본과 함께 디지털 파일로 돌려드립니다.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👴👵</div>
+                <div class="feature-title">어르신 친화적</div>
+                <div class="feature-desc">
+                    누구나 쉽게 이용할 수 있는 간단한 절차. 사진만 보내주시면 모든 것을 저희가 처리합니다.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section demo-section">
+        <h2 class="section-title">놀라운 변화를 경험하세요</h2>
+        <div class="before-after">
+            <div class="before-after-container">
+                <div class="before-img"></div>
+                <div class="after-img"></div>
+                <div class="slider-text before-text">복원 전</div>
+                <div class="slider-text after-text">복원 후</div>
+            </div>
+        </div>
+        <p style="text-align: center; margin-top: 2rem; font-size: 1.1rem; color: rgba(255,255,255,0.7);">
+            바래진 추억에서 생생한 순간으로 - AI 복원의 마법을 직접 확인하세요
+        </p>
+    </section>
+
+    <section class="section process">
+        <h2 class="section-title">이용 방법</h2>
+        <div class="process-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">사진 보내기</div>
+                <div class="feature-desc">사진이나 앨범을 우편으로 보내시거나 디지털로 업로드해 주세요</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">AI 마법 시작</div>
+                <div class="feature-desc">최첨단 AI가 컬러 복원, 화질 개선, 디테일 복구 작업을 진행합니다</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">영상 제작</div>
+                <div class="feature-desc">복원된 사진들로 아름다운 추억 영상을 만들어 드립니다</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-title">수령 및 감상</div>
+                <div class="feature-desc">복원된 사진, 영상, 원본 사진을 안전하게 돌려받으세요</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section contact" id="contact">
+        <h2 class="section-title">문의하기</h2>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">📮</div>
+                <div class="contact-title">앨범 우편 발송</div>
+                <div class="contact-info">
+                    Gandalf Studio<br>
+                    서울시 강남구 테헤란로 123<br>
+                    간달프빌딩 5층<br>
+                    우편번호: 06234
+                </div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">📧</div>
+                <div class="contact-title">이메일</div>
+                <div class="contact-info">
+                    info@gandalfstudio.com<br>
+                    support@gandalfstudio.com<br><br>
+                    24시간 이내 답변 드립니다
+                </div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">📞</div>
+                <div class="contact-title">전화 문의</div>
+                <div class="contact-info">
+                    02-1234-5678<br>
+                    평일: 오전 9시 - 오후 6시<br>
+                    토요일: 오전 10시 - 오후 4시
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p style="font-size: 1.1rem; margin-bottom: 1rem;">✨ Gandalf Studio - 추억을 되살리는 마법 ✨</p>
+        <p>© 2025 Gandalf Studio. All Rights Reserved.</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            AI 기술로 세대를 넘어 추억을 전합니다
+        </p>
+    </footer>
+
+    <script>
+        // Language data
+        const translations = {
+            ko: {
+                tagline: '소중한 추억을 되살려 드립니다',
+                description: '오래된 흑백 사진을 생생한 컬러로 변환하고, 고화질로 복원합니다.<br>최첨단 AI 기술로 소중한 순간들을 아름다운 영상으로 만들어 드립니다.',
+                cta1: '지금 시작하기',
+                cta2: '자세히 알아보기',
+                sectionTitle1: '우리의 마법',
+                sectionTitle2: '놀라운 변화를 경험하세요',
+                sectionTitle3: '이용 방법',
+                sectionTitle4: '문의하기',
+                feature1Title: 'AI 컬러 복원',
+                feature1Desc: '흑백 사진을 자연스럽고 생생한 컬러로 되살립니다. 최첨단 AI 기술로 당시의 색감을 재현합니다.',
+                feature2Title: '사진 복원',
+                feature2Desc: '긁힘, 찢어짐, 세월의 흔적을 말끔히 제거합니다. 선명함과 디테일을 되찾아 드립니다.',
+                feature3Title: '화질 개선',
+                feature3Desc: '해상도를 높이고 이미지 품질을 향상시킵니다. 오래된 사진도 어제 찍은 것처럼 선명하게.',
+                feature4Title: '추억 영상 제작',
+                feature4Desc: '사진 앨범을 감동적인 영상으로 만들어 드립니다. 음악과 부드러운 전환 효과가 함께합니다.',
+                feature5Title: '앨범 서비스',
+                feature5Desc: '앨범 전체를 보내주시면 디지털화, 복원 후 원본과 함께 디지털 파일로 돌려드립니다.',
+                feature6Title: '어르신 친화적',
+                feature6Desc: '누구나 쉽게 이용할 수 있는 간단한 절차. 사진만 보내주시면 모든 것을 저희가 처리합니다.',
+                beforeText: '복원 전',
+                afterText: '복원 후',
+                demoDesc: '바래진 추억에서 생생한 순간으로 - AI 복원의 마법을 직접 확인하세요',
+                step1: '사진 보내기',
+                step1Desc: '사진이나 앨범을 우편으로 보내시거나 디지털로 업로드해 주세요',
+                step2: 'AI 마법 시작',
+                step2Desc: '최첨단 AI가 컬러 복원, 화질 개선, 디테일 복구 작업을 진행합니다',
+                step3: '영상 제작',
+                step3Desc: '복원된 사진들로 아름다운 추억 영상을 만들어 드립니다',
+                step4: '수령 및 감상',
+                step4Desc: '복원된 사진, 영상, 원본 사진을 안전하게 돌려받으세요',
+                contactTitle1: '앨범 우편 발송',
+                contactTitle2: '이메일',
+                contactTitle3: '전화 문의',
+                contactInfo2: '24시간 이내 답변 드립니다',
+                contactInfo3: '평일: 오전 9시 - 오후 6시<br>토요일: 오전 10시 - 오후 4시',
+                footerText: '✨ Gandalf Studio - 추억을 되살리는 마법 ✨',
+                footerSub: 'AI 기술로 세대를 넘어 추억을 전합니다'
+            },
+            en: {
+                tagline: 'Bringing Your Precious Memories Back to Life',
+                description: 'Transform your faded, black & white photos into vibrant, high-quality memories.<br>We use cutting-edge AI to colorize, restore, and create beautiful videos from your cherished moments.',
+                cta1: 'Get Started',
+                cta2: 'Learn More',
+                sectionTitle1: 'Our Magic',
+                sectionTitle2: 'See The Transformation',
+                sectionTitle3: 'How It Works',
+                sectionTitle4: 'Contact Us',
+                feature1Title: 'AI Colorization',
+                feature1Desc: 'Watch black & white photos burst into life with authentic, natural colors powered by advanced AI technology.',
+                feature2Title: 'Photo Restoration',
+                feature2Desc: 'Remove scratches, tears, and aging marks. We bring clarity and detail back to your precious photos.',
+                feature3Title: 'Quality Enhancement',
+                feature3Desc: 'Upscale resolution and enhance image quality, making old photos look like they were taken yesterday.',
+                feature4Title: 'Memory Videos',
+                feature4Desc: 'Transform your photo albums into beautiful, emotional videos with music and smooth transitions.',
+                feature5Title: 'Album Service',
+                feature5Desc: 'Send us your entire photo album. We will digitize, restore, and return both digital and physical copies.',
+                feature6Title: 'Senior-Friendly',
+                feature6Desc: 'Simple process designed for everyone. Just mail us your photos, and we handle everything else.',
+                beforeText: 'BEFORE',
+                afterText: 'AFTER',
+                demoDesc: 'From faded memories to vibrant moments – witness the magic of AI restoration',
+                step1: 'Send Photos',
+                step1Desc: 'Mail us your photos or album, or upload them digitally',
+                step2: 'AI Magic',
+                step2Desc: 'Our advanced AI colorizes, restores, and enhances every detail',
+                step3: 'Video Creation',
+                step3Desc: 'We create a beautiful video montage of your restored memories',
+                step4: 'Receive & Enjoy',
+                step4Desc: 'Get your restored photos, video, and original photos back safely',
+                contactTitle1: 'Mail Your Albums',
+                contactTitle2: 'Email',
+                contactTitle3: 'Call Us',
+                contactInfo2: 'We respond within 24 hours',
+                contactInfo3: 'Mon-Fri: 9AM - 6PM<br>Sat: 10AM - 4PM',
+                footerText: '✨ Gandalf Studio - Where Memories Come Alive ✨',
+                footerSub: 'Transforming generations of memories with AI technology'
+            },
+            ru: {
+                tagline: 'Оживляем Ваши Драгоценные Воспоминания',
+                description: 'Превращаем старые чёрно-белые фотографии в яркие воспоминания высокого качества.<br>Используем передовой ИИ для раскрашивания, восстановления и создания красивых видео.',
+                cta1: 'Начать',
+                cta2: 'Подробнее',
+                sectionTitle1: 'Наша Магия',
+                sectionTitle2: 'Увидьте Преображение',
+                sectionTitle3: 'Как Это Работает',
+                sectionTitle4: 'Связаться',
+                feature1Title: 'ИИ Раскрашивание',
+                feature1Desc: 'Чёрно-белые фотографии оживают с естественными цветами благодаря передовому ИИ.',
+                feature2Title: 'Реставрация Фото',
+                feature2Desc: 'Убираем царапины, разрывы и следы времени. Возвращаем чёткость и детали вашим фото.',
+                feature3Title: 'Улучшение Качества',
+                feature3Desc: 'Повышаем разрешение и качество изображения, делая старые фото как будто снятыми вчера.',
+                feature4Title: 'Видео Воспоминаний',
+                feature4Desc: 'Превращаем фотоальбомы в красивые эмоциональные видео с музыкой и плавными переходами.',
+                feature5Title: 'Сервис Альбомов',
+                feature5Desc: 'Отправьте нам весь фотоальбом. Мы оцифруем, восстановим и вернём цифровые и физические копии.',
+                feature6Title: 'Для Пожилых',
+                feature6Desc: 'Простой процесс для всех. Просто отправьте нам фотографии, остальное мы сделаем сами.',
+                beforeText: 'ДО',
+                afterText: 'ПОСЛЕ',
+                demoDesc: 'От выцветших воспоминаний к ярким моментам – увидьте магию ИИ восстановления',
+                step1: 'Отправить Фото',
+                step1Desc: 'Отправьте нам фото или альбом почтой, или загрузите цифровые файлы',
+                step2: 'Магия ИИ',
+                step2Desc: 'Наш продвинутый ИИ раскрашивает, восстанавливает и улучшает каждую деталь',
+                step3: 'Создание Видео',
+                step3Desc: 'Создаём красивый видеомонтаж из ваших восстановленных воспоминаний',
+                step4: 'Получить',
+                step4Desc: 'Получите восстановленные фото, видео и оригиналы обратно в целости',
+                contactTitle1: 'Почтовый Адрес',
+                contactTitle2: 'Email',
+                contactTitle3: 'Телефон',
+                contactInfo2: 'Ответим в течение 24 часов',
+                contactInfo3: 'Пн-Пт: 9:00 - 18:00<br>Сб: 10:00 - 16:00',
+                footerText: '✨ Gandalf Studio - Где Оживают Воспоминания ✨',
+                footerSub: 'Преображаем поколения воспоминаний с помощью ИИ технологий'
+            }
+        };
+
+        // Change language function
+        function changeLanguage(lang) {
+            const t = translations[lang];
+            
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update content
+            document.querySelector('.tagline').textContent = t.tagline;
+            document.querySelector('.hero-content p').innerHTML = t.description;
+            document.querySelectorAll('.cta-button')[0].textContent = t.cta1;
+            document.querySelectorAll('.cta-button')[1].textContent = t.cta2;
+            
+            document.querySelectorAll('.section-title')[0].textContent = t.sectionTitle1;
+            document.querySelectorAll('.section-title')[1].textContent = t.sectionTitle2;
+            document.querySelectorAll('.section-title')[2].textContent = t.sectionTitle3;
+            document.querySelectorAll('.section-title')[3].textContent = t.sectionTitle4;
+            
+            const featureTitles = document.querySelectorAll('.feature-title');
+            const featureDescs = document.querySelectorAll('.feature-desc');
+            featureTitles[0].textContent = t.feature1Title;
+            featureDescs[0].textContent = t.feature1Desc;
+            featureTitles[1].textContent = t.feature2Title;
+            featureDescs[1].textContent = t.feature2Desc;
+            featureTitles[2].textContent = t.feature3Title;
+            featureDescs[2].textContent = t.feature3Desc;
+            featureTitles[3].textContent = t.feature4Title;
+            featureDescs[3].textContent = t.feature4Desc;
+            featureTitles[4].textContent = t.feature5Title;
+            featureDescs[4].textContent = t.feature5Desc;
+            featureTitles[5].textContent = t.feature6Title;
+            featureDescs[5].textContent = t.feature6Desc;
+            
+            document.querySelector('.before-text').textContent = t.beforeText;
+            document.querySelector('.after-text').textContent = t.afterText;
+            document.querySelector('.demo-section p').textContent = t.demoDesc;
+            
+            const stepTitles = document.querySelectorAll('.step-title');
+            const stepDescs = document.querySelectorAll('.step .feature-desc');
+            stepTitles[0].textContent = t.step1;
+            stepDescs[0].textContent = t.step1Desc;
+            stepTitles[1].textContent = t.step2;
+            stepDescs[1].textContent = t.step2Desc;
+            stepTitles[2].textContent = t.step3;
+            stepDescs[2].textContent = t.step3Desc;
+            stepTitles[3].textContent = t.step4;
+            stepDescs[3].textContent = t.step4Desc;
+            
+            const contactTitles = document.querySelectorAll('.contact-title');
+            const contactInfos = document.querySelectorAll('.contact-info');
+            contactTitles[0].textContent = t.contactTitle1;
+            contactTitles[1].textContent = t.contactTitle2;
+            contactTitles[2].textContent = t.contactTitle3;
+            contactInfos[1].innerHTML = 'info@gandalfstudio.com<br>support@gandalfstudio.com<br><br>' + t.contactInfo2;
+            contactInfos[2].innerHTML = '02-1234-5678<br>' + t.contactInfo3;
+            
+            document.querySelector('footer p:first-child').textContent = t.footerText;
+            document.querySelector('footer p:last-child').textContent = t.footerSub;
+        }
+
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let dotX = 0, dotY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Create magic trail
+            createMagicTrail(e.clientX, e.clientY);
+        });
+
+        function animateCursor() {
+            // Smooth cursor follow
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+
+            // Faster dot follow
+            dotX += (mouseX - dotX) * 0.25;
+            dotY += (mouseY - dotY) * 0.25;
+            cursorDot.style.left = dotX + 'px';
+            cursorDot.style.top = dotY + 'px';
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Magic trail effect
+        let lastTrailTime = 0;
+        function createMagicTrail(x, y) {
+            const now = Date.now();
+            if (now - lastTrailTime < 30) return;
+            lastTrailTime = now;
+
+            const trail = document.createElement('div');
+            trail.className = 'magic-trail';
+            
+            const sparkles = ['✨', '⭐', '💫', '🌟', '✦', '★'];
+            trail.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+            trail.style.left = x + 'px';
+            trail.style.top = y + 'px';
+            trail.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            trail.style.color = `hsl(${Math.random() * 60 + 280}, 80%, 70%)`;
+            
+            document.body.appendChild(trail);
+            
+            setTimeout(() => {
+                trail.remove();
+            }, 1000);
+        }
+
+        // Hover effect for buttons and cards
+        document.querySelectorAll('.cta-button, .feature-card, .contact-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursor.style.borderColor = 'rgba(255, 107, 107, 0.8)';
+                cursorDot.style.background = 'rgba(255, 107, 107, 0.8)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.borderColor = 'rgba(240, 147, 251, 0.8)';
+                cursorDot.style.background = 'rgba(240, 147, 251, 0.8)';
+            });
+        });
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 10 + 5 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Animate feature cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .step, .contact-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease-out';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
