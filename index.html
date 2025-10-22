@@ -567,10 +567,9 @@
             
             <!-- Video Card -->
             <div class="hero-video" id="heroVideo">
-                <video id="demoVideo" controls>
-                    <source src="demo.mp4" type="video/mp4">
-                    <source src="demo.webm" type="video/webm">
-                    귀하의 브라우저는 비디오 태그를 지원하지 않습니다.
+                <video id="demoVideo" controls preload="metadata" playsinline>
+                    <source src="./demo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
                 </video>
             </div>
         </div>
@@ -715,14 +714,20 @@
         const demoVideo = document.getElementById('demoVideo');
         const heroVideo = document.getElementById('heroVideo');
         
-        demoVideo.addEventListener('error', function() {
+        // Handle video errors
+        demoVideo.addEventListener('error', function(e) {
+            console.log('Video error:', e);
             heroVideo.classList.add('hidden');
         });
         
         // If video loads successfully, show it
         demoVideo.addEventListener('loadeddata', function() {
             heroVideo.classList.remove('hidden');
+            console.log('Video loaded successfully');
         });
+
+        // Try to load the video
+        demoVideo.load();
 
         // Language data
         const translations = {
